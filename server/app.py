@@ -14,25 +14,86 @@ migrate = Migrate(app, db)
 
 db.init_app(app)
 
+
 @app.route('/')
 def index():
     return '<h1>Bakery GET API</h1>'
 
+
 @app.route('/bakeries')
 def bakeries():
-    return ''
+    bakeries = Bakery.query.all()
+
+    if bakeries:
+        bakeries_dict = [bakery.to_dict() for bakery in bakeries]
+        make_response = (
+            bakeries_dict,
+            200
+        )
+
+    else:
+        make_response = (
+            {},
+            500
+        )
+
+    return make_response
+
 
 @app.route('/bakeries/<int:id>')
 def bakery_by_id(id):
-    return ''
+    bakeries = Bakery.query.filter(Bakery.id == id).first()
+    if bakeries:
+        make_response = (
+            bakeries.to_dict(),
+            200
+        )
+
+    else:
+        make_response = (
+            {},
+            500
+        )
+
+    return make_response
+
 
 @app.route('/baked_goods/by_price')
 def baked_goods_by_price():
-    return ''
+    baked_goods = BakedGood.query.order_by(BakedGood.price.desc()).all()
+
+    if baked_goods:
+        baked_goods_dict = [baked_good.to_dict() for baked_good in baked_goods]
+        make_response = (
+            baked_goods_dict,
+            200
+        )
+    else:
+        make_response = (
+            {},
+            500
+        )
+
+    return make_response
+
 
 @app.route('/baked_goods/most_expensive')
 def most_expensive_baked_good():
-    return ''
+    baked_goods = BakedGood.query.order_by(BakedGood.price.desc()).all()
+
+    if baked_goods:
+        make_response = (
+            baked_goods[0].to_dict(),
+            200
+        )
+    else:
+        make_response = (
+            {},
+            500
+        )
+
+    return make_response
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
